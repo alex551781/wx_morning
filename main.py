@@ -1,3 +1,4 @@
+import json
 from datetime import date, datetime
 import math
 from wechatpy import WeChatClient
@@ -5,6 +6,7 @@ from wechatpy.client.api import WeChatMessage, WeChatTemplate
 import requests
 from requests import get, post
 import random
+import http.client, urllib
 import os
 
 
@@ -72,6 +74,17 @@ def get_ciba():
         return note_ch, note_en
 
 
+# 励志名言
+def lizhi():
+
+        conn = http.client.HTTPSConnection('api.tianapi.com')  # 接口域名
+        params = urllib.parse.urlencode({'key': 'c7e0a561f3ed3818a25889218162fde3'})
+        headers = {'Content-type': 'application/x-www-form-urlencoded'}
+        conn.request('POST', '/lzmy/index', params, headers)
+        res = conn.getresponse()
+        data = res.read()
+        data = json.loads(data)
+        return data["newslist"][0]["saying"]
 
 
 
@@ -99,31 +112,28 @@ data = {
       "color": get_random_color()
     },
     "min_temperature": {
-      "value": temperature1,
+      "value": temperature2,
       "color": get_random_color()
     },
     "max_temperature": {
-      "value": temperature2,
+      "value": temperature1,
       "color": get_random_color()
     },
     "love_day": {
       "value": love_days,
       "color": get_random_color()
     },
-    "note_en": {
-      "value": note_en,
-      "color": get_random_color()
-    },
-    "note_ch": {
-      "value": note_ch,
-      "color": get_random_color()
-    },
 
-    # "pipi": {
-    #   "value": pipi,
+    # "note_en": {
+    #   "value": note_en,
     #   "color": get_random_color()
     # },
-    #
+    # "note_ch": {
+    #   "value": note_ch,
+    #   "color": get_random_color()
+    # },
+
+
      "birthday1": {
       "value": get_birthday(birthday1),
       "color": get_random_color()
@@ -132,12 +142,12 @@ data = {
       "value": get_birthday(birthday2),
       "color": get_random_color()
      },
-    #
-    # "lizhi": {
-    #   "value": lizhi,
-    #   "color": get_random_color()
-    # },
-    #
+
+    "lizhi": {
+      "value": get_words(),
+      "color": get_random_color()
+    },
+
     # "pop": {
     #   "value": pop,
     #   "color": get_random_color()
