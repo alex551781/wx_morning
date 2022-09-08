@@ -30,7 +30,7 @@ app_secret = "42449570663daf7a28e4168b48e04604"
 
 user1_id = "onnQy51zuXw2-UP5r1G5ucIS6yHU"
 user2_id = "onnQy5xz9wZQRK_T7FYDmihtuNnk"
-template_id = "44eQ3F73jvI-bpiBZqIwqPcgjSlo3RCuTBqbv4ZTNU4"
+template_id = "nlRa5EClwwBgSi_Ac2Acnzp_1ZfOpJ-qQSK_IXxj4Qs"
 
 
 def get_weather():
