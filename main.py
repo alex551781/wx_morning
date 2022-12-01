@@ -18,6 +18,7 @@ month = datetime.now().month
 day   = datetime.now().day
 today1 = datetime.date(datetime(year=year, month=month, day=day))
 print(today)
+print(today1)
 week = week_list[today.isoweekday() % 7]
 print(week)
 start_date = '2020-12-28'
@@ -25,12 +26,13 @@ province = '江苏'
 city = '苏州'
 birthday1 = '05-22'
 birthday2 = '11-30'
+togetherday = '12-28'
 app_id = "wx93ec76c537d9b640"
 app_secret = "42449570663daf7a28e4168b48e04604"
 
 user1_id = "onnQy51zuXw2-UP5r1G5ucIS6yHU"
 user2_id = "onnQy5xz9wZQRK_T7FYDmihtuNnk"
-template_id = "nlRa5EClwwBgSi_Ac2Acnzp_1ZfOpJ-qQSK_IXxj4Qs"
+template_id = "X6lLBa4JOov_6wkil0u2bllHF7L4BaSkVjdKJW-L1Ug"
 
 
 def get_weather():
@@ -38,7 +40,7 @@ def get_weather():
   res = requests.get(url).json()
   print(res)
   weather = res['data']['list'][0]
-  return weather['weather'], math.floor(weather['temp']), math.floor(weather['low'])
+  return weather['weather'], math.floor(weather['high']), math.floor(weather['low'])
 
 def get_count():
   delta = today - datetime.strptime(start_date, "%Y-%m-%d")
@@ -87,41 +89,41 @@ def lizhi():
         return data["newslist"][0]["saying"]
 
 
+def main():
+    client = WeChatClient(app_id, app_secret)
 
-client = WeChatClient(app_id, app_secret)
+    wm = WeChatMessage(client)
 
-wm = WeChatMessage(client)
+    wea, temperature1, temperature2 = get_weather()
+    love_days=get_count()
+    # 获取词霸每日金句
+    note_ch, note_en = get_ciba()
 
-wea, temperature1, temperature2 = get_weather()
-love_days=get_count()
-# 获取词霸每日金句
-note_ch, note_en = get_ciba()
-
-data = {
+    data = {
 
     "date": {
-      "value": "{} {}".format(today1, week),
-      "color": get_random_color()
+    "value": "{} {}".format(today1, week),
+    "color": get_random_color()
     },
     "city": {
-      "value": city,
-      "color": get_random_color()
+    "value": city,
+    "color": get_random_color()
     },
     "weather": {
-      "value": wea,
-      "color": get_random_color()
+    "value": wea,
+    "color": get_random_color()
     },
     "min_temperature": {
-      "value": temperature2,
-      "color": get_random_color()
+    "value": temperature2,
+    "color": get_random_color()
     },
     "max_temperature": {
-      "value": temperature1,
-      "color": get_random_color()
+    "value": temperature1,
+    "color": get_random_color()
     },
     "love_day": {
-      "value": love_days,
-      "color": get_random_color()
+    "value": love_days,
+    "color": get_random_color()
     },
 
     # "note_en": {
@@ -134,18 +136,23 @@ data = {
     # },
 
 
-     "birthday1": {
-      "value": get_birthday(birthday1),
-      "color": get_random_color()
-     },
-     "birthday2": {
-      "value": get_birthday(birthday2),
-      "color": get_random_color()
-     },
+    "birthday1": {
+    "value": get_birthday(birthday1),
+    "color": get_random_color()
+    },
+    "birthday2": {
+    "value": get_birthday(birthday2),
+    "color": get_random_color()
+    },
+    "togetherday": {
+    "value": get_birthday(togetherday),
+    "color": get_random_color()
+    },
+
 
     "lizhi": {
-      "value": get_words(),
-      "color": get_random_color()
+    "value": get_words(),
+    "color": get_random_color()
     },
 
     # "pop": {
@@ -163,8 +170,26 @@ data = {
     #   "color": get_random_color()
     # }
 
-}
-res = wm.send_template(user1_id, template_id, data)
-print(res)
-res = wm.send_template(user2_id, template_id, data)
-print(res)
+    }
+    res = wm.send_template(user1_id, template_id, data)
+    print(res)
+    res = wm.send_template(user2_id, template_id, data)
+    print(res)
+
+
+if __name__ == '__main__':
+    main()
+
+# {{date.DATA}}
+# 城市：{{city.DATA}}
+# 天气：{{weather.DATA}}
+# 最低气温: {{min_temperature.DATA}}
+# 最高气温: {{max_temperature.DATA}}
+# 今天是我们恋爱的第{{love_day.DATA}}天
+# 距离张大帅的生日还有{{birthday1.DATA}}天
+# 距离杨小帅的生日还有{{birthday2.DATA}}天
+# 距离我们在一起的纪念日还有{{togetherday.DATA}}天
+# 寄言：{{lizhi.DATA}}
+# {{note_en.DATA}}
+# {{note_ch.DATA}}
+# {{pipi.DATA}}
