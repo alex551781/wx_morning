@@ -1,5 +1,5 @@
 import json
-from datetime import date, datetime
+from datetime import date, datetime, time
 import math
 from wechatpy import WeChatClient
 from wechatpy.client.api import WeChatMessage, WeChatTemplate
@@ -36,11 +36,48 @@ template_id = "X6lLBa4JOov_6wkil0u2bllHF7L4BaSkVjdKJW-L1Ug"
 
 
 def get_weather():
-  url = "http://autodev.openspeech.cn/csp/api/v2.1/weather?openId=aiuicus&clientType=android&sign=android&city=" + city
+  url = "http://www.tianqiapi.com/api?version=v1&appid=23035354&appsecret=8YvlPNrz&city=" + city
   res = requests.get(url).json()
   print(res)
-  weather = res['data']['list'][0]
-  return weather['weather'], math.floor(weather['high']), math.floor(weather['low'])
+  weather = res['data'][0]
+  print(weather)
+  print(weather['wea'])
+  print((weather['tem1']))
+  return weather['wea'], math.floor(weather['tem1']), math.floor(weather['tem2'])
+
+def get_wea():
+    # 城市id
+    # try:
+    #     city_id = cityinfo.cityInfo[province][city]["AREAID"]
+    # except KeyError:
+    #     print("推送消息失败，请检查省份或城市是否正确")
+    #     os.system("pause")
+    #     sys.exit(1)
+    city_id = 101190401
+    # # 毫秒级时间戳
+    # t = (int(round(time() * 1000)))
+    headers = {
+        "Referer": "http://www.weather.com.cn/weather1d/{}.shtml".format(city_id),
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
+                      'AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.0.0 Safari/537.36'
+    }
+    url = "http://www.tianqiapi.com/api?version=v1&appid=23035354&appsecret=8YvlPNrz&city="+ city
+    response = get(url, headers=headers)
+    response.encoding = "utf-8"
+    response_data = response.text.split(";")[0].split("=")[-1]
+    response_json = eval(response_data)
+    print(response_json)
+    weatherinfo = response_json["data"]
+    print(weatherinfo)
+    print(weatherinfo[0]['wea'])
+    # 天气
+    weather = weatherinfo[0]["wea"]
+
+    # 最高气温
+    temp = weatherinfo[0]["tem1"]
+    # 最低气温
+    tempn = weatherinfo[0]["tem2"]
+    return weather, temp, tempn
 
 def get_count():
   delta = today - datetime.strptime(start_date, "%Y-%m-%d")
@@ -93,8 +130,11 @@ def main():
     client = WeChatClient(app_id, app_secret)
 
     wm = WeChatMessage(client)
+    wea=""
+    temperature1=""
+    temperature2=""
 
-    wea, temperature1, temperature2 = get_weather()
+    wea, temperature1, temperature2 = get_wea()
     love_days=get_count()
     # 获取词霸每日金句
     note_ch, note_en = get_ciba()
